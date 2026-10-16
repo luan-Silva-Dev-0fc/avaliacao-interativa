@@ -1,10 +1,24 @@
-# Explicando o código, de boa 😄
+# Avaliação Interativa – Explicação do código
 
-Aqui eu explico só a **lógica** do código, sem falar de estilo. Nos trechos abaixo tirei os `className` pra ficar fácil de ler.
+Este documento explica a lógica do projeto: uma tela onde o usuário escolhe uma nota de 1 a 5 e, ao enviar, vê uma mensagem de agradecimento.
+
+Nos trechos abaixo, as classes de estilo (`className`) foram removidas para facilitar a leitura.
+
+## Visão geral
+
+O projeto tem três arquivos principais:
+
+| Arquivo | Função |
+| --- | --- |
+| `App.jsx` | Guarda os dados (nota e envio) e decide qual tela mostrar. |
+| `components/Avaliacao.jsx` | Tela onde o usuário escolhe a nota e envia. |
+| `components/Verificacao.jsx` | Tela de agradecimento, exibida depois do envio. |
 
 ---
 
-## 1. `App.jsx` – o cérebro do app
+## 1. `App.jsx`
+
+Este arquivo guarda os dados e escolhe qual tela aparece.
 
 ```jsx
 import { useState } from 'react'
@@ -33,28 +47,33 @@ function App() {
 export default App
 ```
 
-- `import { useState }` → traz o hook que dá "memória" pro componente. Sem ele, o valor sumiria a cada redesenho da tela.
-- `import Avaliacao / Verificacao` → traz as duas telas, que moram em arquivos separados.
-- `const [nota, setNota] = useState(null)`
-  - `nota` é o valor atual (a nota que o usuário clicou).
-  - `setNota` é a função que muda esse valor.
-  - `null` significa "ainda não escolheu nada".
-- `const [enviado, setEnviado] = useState(false)`
-  - Guarda se o usuário já mandou a avaliação. Começa `false`.
-- `const enviar = () => {...}` → função chamada quando clica em "Enviar".
-  - `if (nota !== null)` → só deixa enviar se tiver uma nota escolhida. É uma proteção extra.
-  - `setEnviado(true)` → marca como enviado e o React redesenha a tela.
-- `{enviado ? (...) : (...)}` → renderização condicional. Lê assim: "se enviou, mostra o `Verificacao`; senão, mostra o `Avaliacao`".
-- `nota={nota}` → passa a nota pro componente filho. Isso se chama **prop**.
-- `aoSelecionar={setNota}` → passa a função de mudar a nota, pro filho conseguir atualizar o estado que mora no pai.
-- `aoEnviar={enviar}` → passa a função de enviar.
-- `export default App` → deixa o `App` disponível pro `main.jsx` usar.
+**Explicação:**
 
-> O estado fica **no pai** (`App`) e desce pros filhos por props. Os filhos não guardam nada, só mostram e avisam o pai quando algo acontece.
+- `useState` é um recurso do React que permite guardar um valor. Quando o valor muda, a tela é atualizada automaticamente.
+- `const [nota, setNota] = useState(null)`
+  - `nota`: a nota escolhida pelo usuário.
+  - `setNota`: função usada para alterar a nota.
+  - `null`: valor inicial, que significa que nenhuma nota foi escolhida.
+- `const [enviado, setEnviado] = useState(false)`
+  - `enviado`: indica se a avaliação já foi enviada.
+  - `false`: valor inicial, ou seja, ainda não foi enviada.
+- `enviar`: função executada quando o usuário clica em "Enviar".
+  - Só muda `enviado` para `true` se existir uma nota escolhida (`nota !== null`).
+- `{enviado ? <Verificacao /> : <Avaliacao />}`: renderização condicional.
+  - Se `enviado` for `true`, mostra a tela de agradecimento.
+  - Se for `false`, mostra a tela de votação.
+- **Props:** são os dados e funções que o `App` entrega aos componentes filhos:
+  - `nota={nota}`: entrega o valor da nota.
+  - `aoSelecionar={setNota}`: entrega a função que altera a nota.
+  - `aoEnviar={enviar}`: entrega a função que envia a avaliação.
+
+**Ponto importante:** os dados ficam no `App` (componente pai). Os componentes filhos apenas exibem as informações e avisam o `App` quando algo acontece, como um clique.
 
 ---
 
-## 2. `components/Avaliacao.jsx` – a tela de votação
+## 2. `components/Avaliacao.jsx`
+
+Esta é a tela de votação.
 
 ### Imports e lista de notas
 
@@ -64,30 +83,34 @@ import estrela from '../assets/icon-star.svg'
 const NOTAS = [1, 2, 3, 4, 5]
 ```
 
-- `import estrela from '...svg'` → importa a imagem como se fosse uma variável. O Vite cuida do caminho certo na hora de rodar.
-- `NOTAS` → lista com as notas possíveis. Fica fora da função porque nunca muda. Assim eu não preciso escrever 5 botões na mão.
+- `import estrela`: carrega a imagem da estrela para poder usá-la no código.
+- `NOTAS`: lista com as notas possíveis. Ela fica fora da função porque nunca muda. Com ela, não é preciso escrever os 5 botões um por um.
 
-### A função e as props
+### Recebendo os dados
 
 ```jsx
 function Avaliacao({ nota, aoSelecionar, aoEnviar }) {
 ```
 
-- Os `{ }` no parâmetro "abrem" as props que vieram do `App`: a nota atual, a função de selecionar e a função de enviar.
+O componente recebe três props vindas do `App`:
 
-### A estrela e o título
+- `nota`: a nota atualmente escolhida.
+- `aoSelecionar`: função para escolher uma nota.
+- `aoEnviar`: função para enviar a avaliação.
+
+### Estrela e título
 
 ```jsx
 <img src={estrela} alt="" />
 
-<h1 id="titulo-avaliacao">Como nos saímos?</h1>
+<h1 id="titulo-avaliacao">Como Foi Seu Atendimento?</h1>
 ```
 
-- `src={estrela}` → usa a imagem importada lá em cima. As chaves `{ }` servem pra colocar uma variável dentro do JSX.
-- `alt=""` → vazio de propósito: a estrela é só enfeite, então o leitor de tela pula ela.
-- `id="titulo-avaliacao"` → o `<section>` usa `aria-labelledby="titulo-avaliacao"` pra apontar pra esse título e dizer pro leitor de tela qual é o nome da seção.
+- `src={estrela}`: usa a imagem importada. As chaves `{ }` servem para colocar uma variável dentro do JSX.
+- `alt=""`: a imagem é apenas decorativa, então fica sem descrição. Assim, leitores de tela a ignoram.
+- `id="titulo-avaliacao"`: identifica o título. A tag `<section>` usa esse id em `aria-labelledby` para informar a leitores de tela qual é o nome da seção.
 
-### Os botões de nota
+### Botões de nota
 
 ```jsx
 <div role="radiogroup" aria-label="Nota de 1 a 5">
@@ -108,18 +131,16 @@ function Avaliacao({ nota, aoSelecionar, aoEnviar }) {
 </div>
 ```
 
-- `role="radiogroup"` → a `div` em volta agrupa os botões e avisa o leitor de tela que é um grupo onde só uma opção vale.
-- `NOTAS.map(...)` → pra cada número da lista cria um botão. É o "loop" do React.
-- `valor` → o número da vez (1, depois 2, e assim por diante).
-- `const selecionada = nota === valor` → vira `true` se esse botão é o que está escolhido. Dá pra usar isso pra mudar a aparência dele.
-- `key={valor}` → o React exige um identificador único em listas, pra saber qual botão é qual.
-- `type="button"` → evita comportamento de formulário sem querer.
-- `role="radio"` e `aria-checked={selecionada}` → dizem pro leitor de tela que é uma opção única e se ela tá marcada.
-- `onClick={() => aoSelecionar(valor)}` → ao clicar, chama o `setNota` do pai com o número do botão.
-  - Precisa da setinha `() =>` porque senão a função rodaria na hora de desenhar a tela, e não no clique.
-- `{valor}` → o número que aparece dentro do botão.
+- `NOTAS.map(...)`: percorre a lista e cria um botão para cada número.
+- `valor`: o número do botão atual (1, 2, 3, 4 ou 5).
+- `selecionada`: é `true` quando a nota escolhida é igual ao número do botão. É usado para destacar o botão selecionado.
+- `key={valor}`: identificador único exigido pelo React em listas.
+- `type="button"`: define que é um botão comum, sem comportamento de formulário.
+- `onClick={() => aoSelecionar(valor)}`: ao clicar, chama a função que altera a nota, passando o número do botão.
+  - A forma `() =>` é necessária para que a função só seja executada no clique, e não quando a tela é desenhada.
+- `role="radiogroup"`, `role="radio"` e `aria-checked`: informam a leitores de tela que os botões formam um grupo em que apenas uma opção pode ser escolhida e qual está marcada.
 
-### O botão Enviar
+### Botão Enviar
 
 ```jsx
 <button
@@ -131,12 +152,14 @@ function Avaliacao({ nota, aoSelecionar, aoEnviar }) {
 </button>
 ```
 
-- `onClick={aoEnviar}` → chama a função `enviar` do `App`. Aqui sem a setinha, porque não preciso passar nenhum argumento.
-- `disabled={nota === null}` → se ainda não escolheu nota, o botão fica travado. Quando escolhe, `nota` deixa de ser `null` e ele destrava sozinho.
+- `onClick={aoEnviar}`: ao clicar, chama a função `enviar` do `App`.
+- `disabled={nota === null}`: o botão fica desativado enquanto nenhuma nota for escolhida. Assim que o usuário escolhe uma nota, ele é ativado automaticamente.
 
 ---
 
-## 3. `components/Verificacao.jsx` – a tela de obrigado
+## 3. `components/Verificacao.jsx`
+
+Esta é a tela de agradecimento.
 
 ```jsx
 import ilustracao from '../assets/illustration-thank-you.svg'
@@ -155,18 +178,19 @@ function Verificacao({ nota }) {
 export default Verificacao
 ```
 
-- `import ilustracao from '...svg'` → importa a ilustração da pasta `assets`, igual na outra tela.
-- `<img src={ilustracao} alt="" />` → mostra a ilustração. `alt` vazio porque é só decoração.
-- `({ nota })` → só recebe a nota, porque não precisa de mais nada.
-- `{nota}` → o JavaScript dentro das chaves mostra o valor que veio do `App`.
-- `aria-live="polite"` → quando essa tela aparece, o leitor de tela anuncia o conteúdo novo sem interromper o que estava falando.
-- Essa tela não tem estado nem funções: só recebe um dado e mostra. É um componente "burro", e isso é bom.
+- `import ilustracao`: carrega a imagem da ilustração.
+- `({ nota })`: o componente recebe apenas a nota, pois é só o que precisa mostrar.
+- `{nota}`: exibe na tela o valor recebido do `App`.
+- `alt=""`: a ilustração é decorativa.
+- `aria-live="polite"`: quando essa tela aparece, leitores de tela leem o novo conteúdo sem interromper a leitura atual.
+- Este componente não guarda dados nem tem funções próprias: apenas recebe uma informação e a exibe.
 
 ---
 
-## Resumão do fluxo
+## Resumo do funcionamento
 
-1. A tela abre com `nota = null` e `enviado = false`, então mostra `Avaliacao`.
-2. Clicou num número → `setNota(valor)` → o React redesenha e o botão fica marcado.
-3. Com uma nota escolhida, o botão **Enviar** destrava.
-4. Clicou em Enviar → `setEnviado(true)` → o `App` troca para `Verificacao`, que mostra a nota.
+1. A aplicação começa com `nota = null` e `enviado = false`, e mostra a tela `Avaliacao`.
+2. O usuário clica em um número. A função `setNota` guarda a nota e o botão fica marcado.
+3. Com uma nota escolhida, o botão "Enviar" é ativado.
+4. O usuário clica em "Enviar". A função `enviar` muda `enviado` para `true`.
+5. O `App` passa a mostrar a tela `Verificacao`, com a nota escolhida.
