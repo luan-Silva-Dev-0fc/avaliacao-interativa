@@ -15,7 +15,7 @@ const App = () => {
             {enviado ? (
                 <Verificacao nota={nota} />
             ) : (
-                <Avaliacao nota={nota} aoSelecionar={setNota} aoEnviar={enviar} />
+                <Avaliacao nota={nota} setNota={setNota} aoEnviar={enviar} />
             )}
         </main>
     );

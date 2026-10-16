@@ -1,7 +1,7 @@
 import estrela from "../assets/icon-star.svg";
 import Grade from "./Grade";
 
-const Avaliacao = ({ nota, aoSelecionar, aoEnviar }) => {
+const Avaliacao = ({ nota, setNota, aoEnviar }) => {
     const estiloNota = (valor) =>
         `h-11 w-11 cursor-pointer rounded-full text-sm font-bold transition-colors ${
             nota === valor
@@ -27,11 +27,11 @@ const Avaliacao = ({ nota, aoSelecionar, aoEnviar }) => {
             </p>
 
             <Grade colunas={5}>
-                <button onClick={() => aoSelecionar(1)} className={estiloNota(1)}>1</button>
-                <button onClick={() => aoSelecionar(2)} className={estiloNota(2)}>2</button>
-                <button onClick={() => aoSelecionar(3)} className={estiloNota(3)}>3</button>
-                <button onClick={() => aoSelecionar(4)} className={estiloNota(4)}>4</button>
-                <button onClick={() => aoSelecionar(5)} className={estiloNota(5)}>5</button>
+                <button onClick={() => setNota(1)} className={estiloNota(1)}>1</button>
+                <button onClick={() => setNota(2)} className={estiloNota(2)}>2</button>
+                <button onClick={() => setNota(3)} className={estiloNota(3)}>3</button>
+                <button onClick={() => setNota(4)} className={estiloNota(4)}>4</button>
+                <button onClick={() => setNota(5)} className={estiloNota(5)}>5</button>
             </Grade>
 
             <button
